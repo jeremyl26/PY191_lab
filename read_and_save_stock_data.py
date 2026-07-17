@@ -16,6 +16,11 @@ def get_stock(ticker, start_date, end_date, s_window, l_window):
             print(f"No data found for {ticker}")
             return None
 
+        # Newer yfinance versions return MultiIndex columns (e.g. ('Close', 'AAPL'))
+        # even for a single ticker; flatten to plain column names.
+        if isinstance(df.columns, pd.MultiIndex):
+            df.columns = df.columns.get_level_values(0)
+
         # Calculate daily returns
         df['Return'] = df['Close'].pct_change().fillna(0)
 
